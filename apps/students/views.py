@@ -1,32 +1,69 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from apps.courses.models import Course
-from apps.core.logic import EnrollmentValidator
+from django.db.models import Q
+from apps.courses.models import Course, SystemSetting
 from .models import Enrollment
 
+@login_required
 def student_dashboard(request):
-    courses = Course.objects.all()
-    search_query = request.GET.get('q')
-    if search_query:
-        courses = courses.filter(name__icontains=search_query) | courses.filter(professor__last_name__icontains=search_query)
-    return render(request, 'students/course_list.html', {'courses': courses})
-
-def enroll_action(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    is_valid, error_msg = EnrollmentValidator.validate(request.user, course)
-    if is_valid:
-        Enrollment.objects.create(student=request.user, course=course, term="1402-2")
-        messages.success(request, "درس با موفقیت اخذ شد.")
+    query = request.GET.get('q')
+    if query:
+        all_courses = Course.objects.filter(
+            Q(name__icontains=query) | 
+            Q(professor__first_name__icontains=query) | 
+            Q(professor__last_name__icontains=query)
+        )
     else:
-        messages.error(request, error_msg)
+        all_courses = Course.objects.all()
+    
+    enrollments = Enrollment.objects.filter(student=request.user)
+    days = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه"]
+    
+    return render(request, 'students/dashboard.html', {
+        'all_courses': all_courses,
+        'enrollments': enrollments,
+        'days_list': days
+    })
+
+@login_required
+def enroll_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    student = request.user
+    settings = SystemSetting.objects.first()
+    max_val = settings.max_units if settings else 20
+
+    if Enrollment.objects.filter(student=student, course=course).exists():
+        messages.error(request, "این درس قبلاً در این ترم اخذ شده است.")
+        return redirect('students:dashboard')
+
+    if course.enrolled_students.count() >= course.capacity:
+        messages.error(request, "ظرفیت این درس تکمیل شده است.")
+        return redirect('students:dashboard')
+
+    for prereq in course.prerequisites.all():
+        if not Enrollment.objects.filter(student=student, course=prereq, is_passed=True).exists():
+            messages.error(request, f"خطا در پیش‌نیاز: ابتدا باید درس {prereq.name} را بگذرانید.")
+            return redirect('students:dashboard')
+
+    student_enrollments = Enrollment.objects.filter(student=student)
+    for emp in student_enrollments:
+        if emp.course.day == course.day:
+            if not (course.start_time >= emp.course.end_time or course.end_time <= emp.course.start_time):
+                messages.error(request, f"تداخل زمانی با درس {emp.course.name} وجود دارد.")
+                return redirect('students:dashboard')
+
+    if student_enrollments.count() >= max_val:
+        messages.error(request, f"سقف مجاز واحدها ({max_val}) رعایت نشده است.")
+        return redirect('students:dashboard')
+
+    Enrollment.objects.create(student=student, course=course)
+    messages.success(request, f"درس {course.name} با موفقیت به لیست دروس شما اضافه شد.")
     return redirect('students:dashboard')
 
-def weekly_schedule(request):
-    enrollments = Enrollment.objects.filter(student=request.user, term="1402-2")
-    return render(request, 'students/schedule.html', {'enrollments': enrollments})
-
-def drop_unit(request, enrollment_id):
-    enrollment = get_object_or_404(Enrollment, id=enrollment_id, student=request.user, term="1402-2")
+@login_required
+def drop_course(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id, student=request.user)
     enrollment.delete()
-    messages.success(request, "درس حذف شد.")
-    return redirect('students:schedule')
+    messages.success(request, "واحد مورد نظر با موفقیت حذف شد.")
+    return redirect('students:dashboard')

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}داشبورد دانشجو | انتخاب واحد{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <h2><i class="fa-solid fa-graduation-cap"></i> پنل انتخاب واحد دانشجو</h2>
+    <div style="background: #e8f7ef; padding: 10px 20px; border-radius: 12px; border-right: 5px solid #2E8B57;">
+        <strong>تعداد واحدهای اخذ شده:</strong> {{ enrollments.count }} واحد
+    </div>
+</div>
+
+<div class="card-container" style="margin-bottom: 30px; padding: 20px;">
+    <h3 style="margin-top: 0; color: #2E8B57;"><i class="fa-solid fa-magnifying-glass"></i> جستجو و فیلتر دروس</h3>
+    <form method="get" style="display: flex; gap: 15px;">
+        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="جستجو بر اساس نام درس یا نام استاد..." 
+               style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-family: inherit;">
+        <button type="submit" class="btn-action btn-green" style="padding: 0 30px;">جستجو</button>
+        {% if request.GET.q %}
+            <a href="{% url 'students:dashboard' %}" class="btn-action" style="background: #6c757d; text-decoration: none; display: flex; align-items: center;">لغو فیلتر</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card-container" style="margin-bottom: 30px;">
+    <h3 style="margin-top: 0; color: #2E8B57;"><i class="fa-solid fa-book-open"></i> لیست دروس ارائه شده ترم</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>نام درس</th>
+                <th>استاد</th>
+                <th>زمان برگزاری</th>
+                <th>ظرفیت</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in all_courses %}
+            <tr>
+                <td style="font-weight: bold;">{{ course.name }}</td>
+                <td>{{ course.professor.get_full_name }}</td>
+                <td>{{ course.day }} ({{ course.start_time|time:"H:i" }} تا {{ course.end_time|time:"H:i" }})</td>
+                <td>
+                    <span style="color: {% if course.enrolled_students.count >= course.capacity %}red{% else %}green{% endif %}; font-weight: bold;">
+                        {{ course.enrolled_students.count }} از {{ course.capacity }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'students:enroll' course.id %}" class="btn-action btn-green" style="text-decoration: none; font-size: 13px;">
+                        <i class="fa-solid fa-plus-circle"></i> اخذ واحد
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="padding: 30px; color: #666;">درسی با این مشخصات یافت نشد.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top: 40px;">
+    <h3 style="color: #2E8B57; margin-bottom: 20px;"><i class="fa-solid fa-calendar-week"></i> مشاهده بصری برنامه هفتگی</h3>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;">
+        {% for day in days_list %}
+        <div style="background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; min-height: 200px; border: 1px solid #eee;">
+            <div style="background: #2E8B57; color: white; padding: 10px; text-align: center; font-weight: bold;">
+                {{ day }}
+            </div>
+            <div style="padding: 10px;">
+                {% for ent in enrollments %}
+                    {% if ent.course.day == day %}
+                    <div style="background: #f8f9fa; border-right: 4px solid #37cc76; padding: 10px; border-radius: 8px; margin-bottom: 10px; position: relative;">
+                        <div style="font-weight: bold; font-size: 13px; margin-bottom: 5px;">{{ ent.course.name }}</div>
+                        <div style="font-size: 11px; color: #666;">{{ ent.course.start_time|time:"H:i" }} - {{ ent.course.end_time|time:"H:i" }}</div>
+                        <div style="margin-top: 8px; text-align: left;">
+                            <form action="{% url 'students:drop' ent.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background: none; border: none; color: #d83b01; cursor: pointer; font-size: 11px; font-family: inherit;" 
+                                        onclick="return confirm('آیا از حذف این واحد اطمینان دارید؟')">
+                                    <i class="fa-solid fa-trash-can"></i> حذف واحد
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

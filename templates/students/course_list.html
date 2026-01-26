@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Available Courses</h2>
+    <form method="get">
+        <input type="text" name="q" placeholder="Search course or professor..." style="padding: 10px; border-radius: 10px; border: 1px solid #ccc;">
+    </form>
+</div>
+
+<div class="card-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Course Name</th>
+                <th>Instructor</th>
+                <th>Capacity</th>
+                <th>Day & Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.code }}</td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.professor.get_full_name }}</td>
+                <td>{{ course.capacity }}</td>
+                <td>{{ course.day }} ({{ course.start_time }}-{{ course.end_time }})</td>
+                <td>
+                    <a href="{% url 'students:enroll' course.id %}" class="btn-action btn-green">Enroll</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

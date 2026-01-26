@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت دروس{% endblock %}
+
+{% block content %}
+<div id="homePage" style="width: 100%; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; border-radius: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 30px;">
+    <h1 style="color: #2E8B57; font-size: 36px; font-weight: bold; margin-bottom: 20px;">خوش آمدید مدیر گرامی!</h1>
+    <img src="/media/images/admin.png" class="home-image" style="width: 450px; border-radius: 20px; opacity: 0.9;" alt="Admin Dashboard">
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2><i class="fa-solid fa-gears"></i> مدیریت دروس دانشگاه</h2>
+    <a href="{% url 'courses:create' %}" class="btn-action btn-green" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-plus"></i> تعریف درس جدید
+    </a>
+</div>
+
+<div class="card-container">
+    <table>
+        <thead>
+            <tr>
+                <th>کد درس</th>
+                <th>نام درس</th>
+                <th>استاد</th>
+                <th>ظرفیت</th>
+                <th>زمان برگزاری</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.code }}</td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.professor.get_full_name }}</td>
+                <td>{{ course.capacity }}</td>
+                <td>{{ course.day }} - ساعت {{ course.start_time|time:"H:i" }}</td>
+                <td>
+                    <a href="{% url 'courses:edit' course.id %}" class="icons edit" title="ویرایش" style="margin: 0 10px; color: #0078d4;">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <form action="{% url 'courses:delete' course.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none; border:none; cursor:pointer; color: #d83b01;" onclick="return confirm('آیا از حذف این درس مطمئن هستید؟')">
+                            <i class="fa-solid fa-trash icons trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">هنوز درسی در سیستم تعریف نشده است.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}دروس من{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+    <h2 style="margin: 0;"><i class="fa-solid fa-chalkboard-user"></i> لیست دروس اساتید</h2>
+</div>
+
+<div class="card-container">
+    <table>
+        <thead>
+            <tr>
+                <th>کد درس</th>
+                <th>نام درس</th>
+                <th>ظرفیت</th>
+                <th>تعداد ثبت‌نامی</th>
+                <th>زمان برگزاری (ساعت)</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.code }}</td>
+                <td style="font-weight: 600; color: #333;">{{ course.name }}</td>
+                <td>{{ course.capacity }}</td>
+                <td>
+                    <span style="background: #e8f7ef; color: #2E8B57; padding: 4px 10px; border-radius: 8px; font-weight: bold;">
+                        {{ course.enrolled_students.count }} نفر
+                    </span>
+                </td>
+                <td>{{ course.day }} ({{ course.start_time|time:"H:i" }} تا {{ course.end_time|time:"H:i" }})</td>
+                <td>
+                    <a href="{% url 'professors:student_list' course.id %}" class="btn-action btn-green" style="text-decoration: none;">
+                        <i class="fa-solid fa-users"></i> مشاهده لیست دانشجویان
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="padding: 40px; color: #666;">
+                    <i class="fa-solid fa-face-meh" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                    در حال حاضر درسی برای شما در این ترم تعریف نشده است.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

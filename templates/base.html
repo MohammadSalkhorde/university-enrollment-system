@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}سامانه دانشگاهی{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* استایل‌های اصلی قالب کارفرما - نسخه راست‌چین شده */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            background-color: #f5f6fa; 
+            overflow: hidden;
+        }
+
+        /* Sidebar شیک */
+        .sidebar { 
+            width: 260px; 
+            background: #2E8B57; 
+            padding: 30px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1); 
+            border-top-left-radius: 25px; 
+            border-bottom-left-radius: 25px;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sidebar a { 
+            text-decoration: none; 
+            padding: 14px 18px; 
+            background: #37cc76; 
+            color: white; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 15px; 
+            transition: all 0.3s ease; 
+        }
+
+        .sidebar a:hover { 
+            background: #2bb868; 
+            transform: translateX(-5px); /* حرکت به سمت چپ در حالت RTL */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .sidebar a i { font-size: 18px; width: 25px; text-align: center; }
+
+        /* Main Content */
+        .main { 
+            flex: 1; 
+            padding: 25px; 
+            overflow-y: auto; 
+            text-align: right;
+        }
+
+        /* المان‌های عمومی داشبورد */
+        h2 { color: #2E8B57; font-size: 28px; margin-bottom: 25px; }
+        
+        .card-container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05); 
+        }
+
+        /* استایل جدول‌ها */
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        table th, table td { border: 1px solid #eee; padding: 15px; text-align: center; }
+        table th { background: #e8f7ef; color: #2E8B57; font-weight: bold; }
+        table tr:hover { background-color: #f9f9f9; }
+
+        /* دکمه‌ها */
+        .btn-action { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            border: none; 
+            cursor: pointer; 
+            color: white; 
+            text-decoration: none; 
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        .btn-green { background: #2E8B57; }
+        .btn-green:hover { background: #256f46; }
+        .btn-red { background: #d83b01; }
+        .btn-red:hover { background: #b03000; }
+
+        /* استایل پیام‌ها */
+        .message-banner {
+            padding: 15px;
+            background: #e8f7ef;
+            color: #2E8B57;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-right: 5px solid #2E8B57;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">پنل مدیریت دانشگاه</div>
+        
+        {% if user.is_authenticated %}
+            
+            {% if user.is_student %}
+                <a href="{% url 'students:dashboard' %}"><i class="fa-solid fa-house"></i> داشبورد دانشجو</a>
+                <a href="{% url 'students:schedule' %}"><i class="fa-solid fa-calendar-week"></i> برنامه هفتگی من</a>
+            
+            {% elif user.is_professor %}
+                <a href="{% url 'professors:my_courses' %}"><i class="fa-solid fa-chalkboard-user"></i> لیست دروس اساتید</a>
+            
+            {% elif user.is_admin or user.is_staff %}
+                <a href="{% url 'courses:manage_list' %}"><i class="fa-solid fa-gauge-high"></i> مدیریت واحدها</a>
+                <a href="{% url 'courses:create' %}"><i class="fa-solid fa-plus-circle"></i> تعریف درس جدید</a>
+            {% endif %}
+
+            <a href="{% url 'accounts:logout' %}" style="background: #d83b01; margin-top: auto;">
+                <i class="fa-solid fa-power-off"></i> خروج از سامانه
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="main">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-banner">
+                    <i class="fa-solid fa-circle-info"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

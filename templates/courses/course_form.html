@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}ویرایش درس{% else %}افزودن درس جدید{% endif %}{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+    <a href="{% url 'courses:manage_list' %}" style="text-decoration: none; color: #2E8B57; font-size: 24px;">
+        <i class="fa-solid fa-circle-arrow-right"></i>
+    </a>
+    <h2 style="margin: 0;">
+        {% if form.instance.pk %}
+            <i class="fa-solid fa-pen-to-square"></i> ویرایش اطلاعات درس
+        {% else %}
+            <i class="fa-solid fa-plus-circle"></i> تعریف درس جدید در سامانه
+        {% endif %}
+    </h2>
+</div>
+
+<div class="card-container" style="width: 70%; margin-right: 0; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            {% for field in form %}
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #444; margin-bottom: 8px;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <small style="color: #d83b01; margin-top: 5px; font-size: 13px;">{{ field.errors.0 }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; display: flex; gap: 15px;">
+            <button type="submit" class="btn-action btn-green" style="padding: 12px 30px; font-size: 16px; font-family: inherit; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-check"></i> ذخیره اطلاعات درس
+            </button>
+            <a href="{% url 'courses:manage_list' %}" class="btn-action" style="background: #6c757d; text-decoration: none; padding: 12px 30px; display: flex; align-items: center; gap: 10px;">
+                انصراف
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* استایل اختصاصی برای هماهنگی کامل با قالب داشبورد */
+    input, select, textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        font-family: inherit;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #2E8B57;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+    }
+
+    /* استایل برای فیلدهای چند انتخابی (مثل پیش‌نیازها) */
+    select[multiple] {
+        height: 120px;
+    }
+</style>
+{% endblock %}

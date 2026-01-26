@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ورود به سامانه دانشگاه</title>
+    <style>
+        body { margin:0; font-family:Tahoma, Geneva, sans-serif; height:100vh; display:flex; align-items:center; justify-content:center; background-color:#2E8B57; }
+        .container { width:900px; height:500px; display:flex; background:white; border-radius:30px; box-shadow:0 8px 30px rgba(0,0,0,0.1); overflow:hidden; flex-direction: row-reverse; }
+        
+        .left-box { width:40%; background:#f8f8f8; padding:40px; display:flex; flex-direction:column; justify-content:center; text-align: right; }
+        .left-box h2 { margin-bottom:20px; color: #333; }
+        .left-box input, .left-box select { width:100%; padding:14px; margin-bottom:15px; border:1px solid #ccc; border-radius:10px; font-family: inherit; box-sizing: border-box; }
+        .left-box button { width:100%; padding:14px; background:#21c76a; color:white; border:none; border-radius:10px; font-size:16px; cursor:pointer; transition:0.2s; font-family: inherit; }
+        .left-box button:hover { background:#1eae5e; }
+
+        .right-box { width:60%; position:relative; overflow:hidden; }
+        .slide { position:absolute; width:100%; height:100%; opacity:0; transition:opacity 0.7s; }
+        .active { opacity:1; }
+        .slide img { width:100%; height:100%; object-fit:cover; }
+        .slide-text { position: absolute; bottom: 30px; right: 30px; color: white; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; font-size: 18px; }
+        
+        .alert { color: white; background: #d83b01; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-box">
+        <h2>ورود به پنل</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="نام کاربری (کد شناسایی)" required>
+            <input type="password" name="password" placeholder="رمز عبور" required>
+            
+            <label style="margin-bottom: 5px; display: block;">ورود به عنوان:</label>
+            <select name="role">
+                <option value="student">دانشجو</option>
+                <option value="professor">استاد</option>
+                <option value="admin">مدیر سیستم</option>
+            </select>
+            
+            <button type="submit">ورود به حساب</button>
+        </form>
+    </div>
+
+    <div class="right-box">
+        <div class="slides-container">
+            <div class="slide active"><img src="/media/images/image1.png" alt="Slide 1"></div>
+            <div class="slide"><img src="/media/images/image2.png" alt="Slide 2"></div>
+            <div class="slide"><img src="/media/images/image3.png" alt="Slide 3"></div>
+            
+            <button class="arrow arrow-left" onclick="prevSlide()">&#8592;</button>
+            <button class="arrow arrow-right" onclick="nextSlide()">&#8594;</button>
+        </div>
+        <div class="slide-text" id="slide-text">تجربه‌ای آسان در انتخاب واحد دانشگاهی</div>
+    </div>
+</div>
+
+</body>
+</html>

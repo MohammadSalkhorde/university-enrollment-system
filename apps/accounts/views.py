@@ -6,13 +6,13 @@ def login_view(request):
     if request.method == 'POST':
         u = request.POST.get('username')
         p = request.POST.get('password')
-        selected_role = request.POST.get('role') # نقش انتخاب شده در فرم
+        selected_role = request.POST.get('role') 
         
         user = authenticate(username=u, password=p)
         
         if user:
-            # بررسی دسترسی بر اساس نقش انتخاب شده
             access_granted = False
+            target_url = 'accounts:login' 
             
             if selected_role == 'student' and user.is_student:
                 access_granted = True
@@ -20,9 +20,9 @@ def login_view(request):
             elif selected_role == 'professor' and user.is_professor:
                 access_granted = True
                 target_url = 'professors:my_courses'
-            elif selected_role == 'admin' and (user.is_admin or user.is_staff):
+            elif selected_role == 'admin' and (user.is_staff or user.is_superuser):
                 access_granted = True
-                target_url = 'courses:manage_list'
+                target_url = 'courses:manage_list' 
             
             if access_granted:
                 login(request, user)

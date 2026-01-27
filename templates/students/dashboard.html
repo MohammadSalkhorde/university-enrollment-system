@@ -2,74 +2,119 @@
 {% block title %}داشبورد دانشجو{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-    <h2 style="color: #2E8B57;"><i class="fa-solid fa-graduation-cap"></i> پنل انتخاب واحد دانشجو</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+        <div>
+            <h2 style="color: #2E8B57; margin: 0;">پنل دانشجو: {{ user.get_full_name }}</h2>
+            <small style="color: #666;">شماره شناسایی: {{ user.username }}</small>
+        </div>
+    </div>
     <div style="background: #e8f7ef; padding: 10px 20px; border-radius: 12px; border-right: 5px solid #2E8B57;">
-        <strong>تعداد واحدهای اخذ شده:</strong> {{ enrollments.count }}
+        <strong>واحدهای اخذ شده:</strong> {{ enrolled_courses|length }}
     </div>
 </div>
 
-<div class="card-container" style="margin-bottom: 30px; padding: 20px;">
+<div class="card-container" style="margin-bottom: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
     <form method="get" style="display: flex; gap: 15px;">
         <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="جستجوی درس یا استاد..." 
-               style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-family: 'Vazir', sans-serif;">
-        <button type="submit" class="btn-action btn-green">جستجو</button>
+               style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit;">
+        <button type="submit" class="btn-action btn-green" style="padding: 0 25px; display: flex; align-items: center; gap: 8px; background: #2E8B57; color: white; border: none; border-radius: 10px; cursor: pointer;">
+            جستجو
+        </button>
     </form>
 </div>
 
-<div class="card-container" style="margin-bottom: 30px;">
-    <h3 style="padding: 15px; border-bottom: 1px solid #eee;">لیست دروس ارائه شده</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>نام درس</th>
-                <th>استاد</th>
-                <th>زمان برگزاری</th>
-                <th>ظرفیت</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for course in all_courses %}
-            <tr>
-                <td><strong>{{ course.name }}</strong></td>
-                <td>{{ course.professor.get_full_name }}</td>
-                <td>{{ course.day }} ({{ course.start_time|time:"H:i" }})</td>
-                <td>{{ course.enrolled_students.count }} از {{ course.capacity }}</td>
-                <td>
-                    <a href="{% url 'students:enroll' course.id %}" class="btn-action btn-green">اخذ واحد</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 20px;">درسی برای نمایش یافت نشد.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<h3 style="margin-bottom: 15px; color: #2E8B57;"><i class="fa-solid fa-calendar-days"></i> برنامه هفتگی شما</h3>
-<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 40px;">
-    {% for day in days_list %}
-    <div style="background: white; border-radius: 10px; border: 1px solid #ddd; min-height: 180px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-        <div style="background: #2E8B57; color: white; padding: 8px; text-align: center; border-radius: 10px 10px 0 0; font-weight: bold;">
-            {{ day }}
+<h3 style="margin-bottom: 15px; color: #2E8B57; display: flex; align-items: center; gap: 10px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    برنامه هفتگی شما
+</h3>
+<div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 40px;">
+    {% for d_val, d_name in my_custom_days %}
+    <div style="background: white; border-radius: 12px; border: 1px solid #eee; min-height: 180px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="background: #2E8B57; color: white; padding: 10px; text-align: center; border-radius: 12px 12px 0 0; font-weight: bold; font-size: 14px;">
+            {{ d_name }}
         </div>
-        <div style="padding: 8px;">
-            {% for ent in enrollments %}
-                {% if ent.course.day == day %}
-                <div style="background: #f0fdf4; border-right: 4px solid #2ecc71; padding: 8px; margin-bottom: 8px; border-radius: 4px; font-size: 13px;">
-                    <strong>{{ ent.course.name }}</strong><br>
-                    ساعت: {{ ent.course.start_time|time:"H:i" }}
-                    <div style="margin-top: 5px; text-align: left;">
-                        <a href="{% url 'students:drop' ent.id %}" style="color: #e74c3c; font-size: 11px; text-decoration: none;" onclick="return confirm('آیا از حذف این درس مطمئن هستید؟')">حذف واحد</a>
+        <div style="padding: 10px;">
+            {% for course in enrolled_courses %}
+                {% if course.day == d_val %}
+                <div style="background: #ffffff; border-right: 4px solid #2ecc71; padding: 12px; margin-bottom: 12px; border-radius: 8px; font-size: 13px; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.15); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <strong style="display: block; color: #1e4620; margin-bottom: 5px; font-size: 14px;">{{ course.name }}</strong>
+                    
+                    <div style="color: #555; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-clock" style="font-size: 10px; color: #2ecc71;"></i>
+                        {{ course.start_time|time:"H:i" }}
                     </div>
+                    
+                    <div style="color: #777; margin-bottom: 10px; font-size: 11px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-user-tie" style="font-size: 10px;"></i>
+                        استاد: {{ course.professor.get_full_name|default:"نامشخص" }}
+                    </div>
+                    
+                    <form action="{% url 'courses:drop' course.id %}" method="post" style="border-top: 1px dotted #eee; padding-top: 8px;">
+                        {% csrf_token %}
+                        <button type="submit" style="color: #ff4757; background: #fff5f5; border: 1px solid #ffcccc; width: 100%; padding: 5px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 4px;" 
+                                onclick="return confirm('آیا از حذف واحد {{ course.name }} مطمئن هستید؟')"
+                                onmouseover="this.style.background='#ff4757'; this.style.color='white'"
+                                onmouseout="this.style.background='#fff5f5'; this.style.color='#ff4757'">
+                            <i class="fa-solid fa-trash-can"></i> حذف از لیست
+                        </button>
+                    </form>
                 </div>
                 {% endif %}
             {% endfor %}
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div class="card-container" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #eee; background: #fafafa;">لیست دروس ارائه شده</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #f8f9fa;">
+                <th style="padding: 15px; text-align: right;">نام درس</th>
+                <th style="padding: 15px; text-align: right;">استاد</th>
+                <th style="padding: 15px; text-align: right;">زمان برگزاری</th>
+                <th style="padding: 15px; text-align: center;">ظرفیت</th>
+                <th style="padding: 15px; text-align: center;">عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in all_courses %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;"><strong>{{ course.name }}</strong></td>
+                <td style="padding: 15px;">{{ course.professor.get_full_name }}</td>
+                <td style="padding: 15px;">{{ course.get_day_display }} - {{ course.start_time|time:"H:i" }}</td>
+                <td style="padding: 15px; text-align: center;">{{ course.capacity }}</td>
+                
+                <td style="padding: 15px; text-align: center;">
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                        {% if course.id in enrolled_ids %}
+                            <span style="color: #2ecc71; font-size: 12px; font-weight: bold;">اخذ شده ✅</span>
+                            <form action="{% url 'courses:drop' course.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" style="background: #fff1f0; color: #e74c3c; border: 1px solid #ffa39e; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px;" onclick="return confirm('حذف شود؟')">
+                                    حذف 🗑️
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'courses:enroll' course.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" style="background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: inherit;">
+                                    اخذ واحد +
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 20px; color: #999;">درسی یافت نشد.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

@@ -5,26 +5,10 @@ from django.db.models import Q
 from apps.courses.models import Course, SystemSetting
 from .models import Enrollment
 
-@login_required
+from django.shortcuts import redirect
+
 def student_dashboard(request):
-    query = request.GET.get('q')
-    if query:
-        all_courses = Course.objects.filter(
-            Q(name__icontains=query) | 
-            Q(professor__first_name__icontains=query) | 
-            Q(professor__last_name__icontains=query)
-        )
-    else:
-        all_courses = Course.objects.all()
-    
-    enrollments = Enrollment.objects.filter(student=request.user)
-    days = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه"]
-    
-    return render(request, 'students/dashboard.html', {
-        'all_courses': all_courses,
-        'enrollments': enrollments,
-        'days_list': days
-    })
+    return redirect('courses:dashboard')
 
 @login_required
 def enroll_course(request, course_id):

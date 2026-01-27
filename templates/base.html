@@ -125,8 +125,8 @@
         {% if user.is_authenticated %}
             
             {% if user.is_student %}
-                <a href="{% url 'students:dashboard' %}"><i class="fa-solid fa-house"></i> داشبورد دانشجو</a>
-                <a href="{% url 'students:schedule' %}"><i class="fa-solid fa-calendar-week"></i> برنامه هفتگی من</a>
+                <a href="{% url 'courses:dashboard' %}"><i class="fa-solid fa-house"></i> داشبورد دانشجو</a>
+                <a href="{% url 'courses:dashboard' %}"><i class="fa-solid fa-calendar-week"></i> برنامه هفتگی من</a>
             
             {% elif user.is_professor %}
                 <a href="{% url 'professors:my_courses' %}"><i class="fa-solid fa-chalkboard-user"></i> لیست دروس اساتید</a>

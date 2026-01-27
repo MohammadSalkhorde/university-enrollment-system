@@ -6,7 +6,7 @@
     <a href="{% url 'courses:manage_list' %}" style="text-decoration: none; color: #2E8B57; font-size: 24px;">
         <i class="fa-solid fa-circle-arrow-right"></i>
     </a>
-    <h2 style="margin: 0;">
+    <h2 style="margin: 0; color: #333;">
         {% if form.instance.pk %}
             <i class="fa-solid fa-pen-to-square"></i> ویرایش اطلاعات درس
         {% else %}
@@ -15,40 +15,53 @@
     </h2>
 </div>
 
-<div class="card-container" style="width: 70%; margin-right: 0; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+<div class="card-container" style="width: 80%; margin: 0 auto; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
     <form method="post">
         {% csrf_token %}
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             {% for field in form %}
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #444; margin-bottom: 8px;">{{ field.label }}</label>
+                <div style="display: flex; flex-direction: column; {% if field.name == 'prerequisites' %}grid-column: span 2;{% endif %}">
+                    <label style="font-weight: 600; color: #444; margin-bottom: 8px;">
+                        {{ field.label }}
+                        {% if field.field.required %}<span style="color: red;">*</span>{% endif %}
+                    </label>
+                    
                     {{ field }}
+                    
+                    {% if field.help_text %}
+                        <small style="color: #666; margin-top: 4px;">{{ field.help_text }}</small>
+                    {% endif %}
+                    
                     {% if field.errors %}
-                        <small style="color: #d83b01; margin-top: 5px; font-size: 13px;">{{ field.errors.0 }}</small>
+                        {% for error in field.errors %}
+                            <small style="color: #d83b01; margin-top: 5px; font-size: 13px;">
+                                <i class="fa-solid fa-exclamation-triangle"></i> {{ error }}
+                            </small>
+                        {% endfor %}
                     {% endif %}
                 </div>
             {% endfor %}
         </div>
 
-        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; display: flex; gap: 15px;">
-            <button type="submit" class="btn-action btn-green" style="padding: 12px 30px; font-size: 16px; font-family: inherit; display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-check"></i> ذخیره اطلاعات درس
-            </button>
-            <a href="{% url 'courses:manage_list' %}" class="btn-action" style="background: #6c757d; text-decoration: none; padding: 12px 30px; display: flex; align-items: center; gap: 10px;">
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; display: flex; gap: 15px; justify-content: flex-end;">
+            <a href="{% url 'courses:manage_list' %}" class="btn-action" style="background: #6c757d; text-decoration: none; padding: 12px 30px; display: flex; align-items: center; gap: 10px; color: white; border-radius: 12px;">
                 انصراف
             </a>
+            <button type="submit" class="btn-action btn-green" style="padding: 12px 30px; font-size: 16px; font-family: inherit; display: flex; align-items: center; gap: 10px; border: none; cursor: pointer;">
+                <i class="fa-solid fa-check"></i> ذخیره اطلاعات درس
+            </button>
         </div>
     </form>
 </div>
 
 <style>
-    /* استایل اختصاصی برای هماهنگی کامل با قالب داشبورد */
+    /* استایل‌های ارتقایافته برای فیلدها */
     input, select, textarea {
         width: 100%;
         padding: 12px 15px;
         border-radius: 12px;
         border: 1px solid #ddd;
-        background-color: #f9f9f9;
+        background-color: #fcfcfc;
         font-family: inherit;
         font-size: 15px;
         transition: all 0.3s ease;
@@ -62,9 +75,21 @@
         box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
     }
 
-    /* استایل برای فیلدهای چند انتخابی (مثل پیش‌نیازها) */
+    /* استایل ویژه برای فیلد انتخاب روز (که حالا Select شده) */
+    select {
+        cursor: pointer;
+        appearance: none; /* حذف فلش پیش‌فرض مرورگر برای استایل سفارشی */
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232E8B57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: left 10px center;
+        background-size: 18px;
+        padding-left: 40px;
+    }
+
     select[multiple] {
-        height: 120px;
+        height: 100px;
+        background-image: none;
+        padding-left: 15px;
     }
 </style>
 {% endblock %}

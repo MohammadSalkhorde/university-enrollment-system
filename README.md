@@ -1,139 +1,142 @@
 # 🎓 University Enrollment System
 
-The **University Enrollment System** is a web-based platform designed to manage the university course registration process.
-This project is developed with a strong focus on **SOLID principles**, **Clean Architecture**, and **high security standards**.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![Django](https://img.shields.io/badge/Django-5%2F6-success?logo=django)
+![DRF](https://img.shields.io/badge/DRF-REST-red)
+![Security](https://img.shields.io/badge/Security-JWT-orange)
+![License](https://img.shields.io/badge/License-Academic-lightgrey)
+
+<p align="center">
+  <img src="assets/demo.png" alt="University Enrollment System Demo" width="900">
+</p>
+
+The **University Enrollment System** is a **secure, role-based web platform** designed to manage the complete university course registration workflow.  
+The project is built with a strong emphasis on **Clean Architecture**, **SOLID principles**, and **robust validation logic**.
+
+It serves as an excellent **academic project**, **portfolio showcase**, and a solid base for real-world university systems.
 
 ---
 
-## 📌 Project Description
+## 📌 Project Overview
 
-This system provides a comprehensive solution for managing course selection at a university.
-It allows administrators to manage courses and academic rules, students to select courses intelligently with automatic validation, and professors to manage their assigned courses and enrolled students.
+This system provides a comprehensive solution for managing course enrollment in a university environment.
 
-The platform supports three main roles:
+It supports three main roles:
 
-* **Administrator**
-* **Student**
-* **Professor**
+- 👨‍💼 **Administrator**
+- 🎓 **Student**
+- 👨‍🏫 **Professor**
+
+Each role has clearly defined permissions and responsibilities, enforced through **Role-Based Access Control (RBAC)**.
 
 ---
 
-## 🛠 Technology Stack
+## 🧠 Technology Stack
 
 ### Backend
-
-* **Python**
-* **Django 5.x / 6.x**
-* **Django REST Framework**
-* **JWT Authentication** using `djangorestframework-simplejwt`
+- Python 3.10+
+- Django 5.x / 6.x
+- Django REST Framework (DRF)
+- JWT Authentication (`djangorestframework-simplejwt`)
 
 ### Database
-
-* **SQLite**
+- SQLite (development & academic use)
 
 ### Frontend
-
-* **HTML5**
-* **CSS3** (RTL support)
-* **FontAwesome 6**
+- HTML5
+- CSS3 (RTL support)
+- FontAwesome 6
 
 ### Architecture
-
-* Modular **App-Based Architecture**
-* Clean Code & **SOLID Principles**
-* Role-Based Access Control (RBAC)
+- Modular App-Based Architecture
+- Clean Code & SOLID Principles
+- Role-Based Access Control (RBAC)
 
 ---
 
-## ✨ Implemented Features
+## ✨ Features
 
-### 👨‍💼 Admin Panel
+### 👨‍💼 Administrator Panel
 
-* **Course Management (CRUD):**
-
-  * Create, update, and delete courses with full details
-* **Prerequisite Management:**
-
-  * Define prerequisite courses for each course
-* **System Settings:**
-
-  * Configure minimum and maximum allowed credits per semester
+- **Course Management (CRUD)**
+  - Create, update, and delete courses
+- **Prerequisite Management**
+  - Define prerequisite relationships between courses
+- **Academic Rules**
+  - Configure minimum & maximum semester credit limits
 
 ---
 
 ### 🎓 Student Panel
 
-* **Smart Course Search:**
-
-  * Search courses by course name or professor name
-* **Enrollment Validation Logic:**
-
-  * Automatic validation of multiple rules, including:
-
-    * Time conflicts
-    * Course prerequisites
-    * Course capacity
-    * Duplicate course selection
-    * Credit limits
-* **Visual Weekly Schedule:**
-
-  * 5-day timetable view of the student’s weekly schedule
-* **Course Management:**
-
-  * Ability to remove selected courses during the current semester
+- **Smart Course Search**
+  - Search by course title or professor name
+- **Advanced Enrollment Validation**
+  - Automatic checks for:
+    - Time conflicts
+    - Prerequisites
+    - Course capacity
+    - Duplicate enrollment
+    - Credit limits
+- **Weekly Schedule View**
+  - Visual 5-day timetable
+- **Course Management**
+  - Drop courses during the active semester
 
 ---
 
 ### 👨‍🏫 Professor Panel
 
-* **Assigned Courses View:**
-
-  * View courses assigned to the professor
-* **Student Management:**
-
-  * View enrolled students for each course (sorted by last name)
-* **Professor Permissions:**
-
-  * Ability to remove a student from a course
+- **Assigned Courses Dashboard**
+- **Student List Management**
+  - View enrolled students sorted by last name
+- **Professor Permissions**
+  - Remove students from courses
 
 ---
 
-## 🚀 Installation and Execution Guide
+## 🚀 Installation & Execution
 
-Follow the steps below to run the project locally:
-
-### 1️⃣ Navigate to the Project Directory
+### 1️⃣ Navigate to project directory
 
 ```bash
 cd university_project
 ```
 
-### 2️⃣ Install Required Dependencies
+---
+
+### 2️⃣ Install dependencies
 
 ```bash
 pip install django djangorestframework djangorestframework-simplejwt django-filter
 ```
 
-### 3️⃣ Prepare the Database
+---
+
+### 3️⃣ Apply migrations
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 4️⃣ Create an Admin User (Superuser)
+---
+
+### 4️⃣ Create admin user
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 5️⃣ Run the Development Server
+---
+
+### 5️⃣ Run development server
 
 ```bash
 python manage.py runserver
 ```
 
-After running the server, access the project at:
+Access the application at:
 
 ```
 http://127.0.0.1:8000/
@@ -141,9 +144,9 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🧪 Running Unit Tests
+## 🧪 Running Tests
 
-To verify the correctness of the student enrollment logic, run:
+To validate enrollment logic:
 
 ```bash
 python manage.py test apps.students
@@ -153,42 +156,46 @@ python manage.py test apps.students
 
 ## 📂 Project Structure
 
-```
+```plaintext
+university_project/
+│
 ├── apps/
-│   ├── accounts/     # User management and authentication
-│   ├── courses/      # Course management and admin settings
-│   ├── students/     # Student panel and enrollment logic
-│   └── professors/   # Professor panel and student lists
-├── static/           # Static files (CSS, fonts, icons)
-├── templates/        # HTML templates (RTL supported)
-└── manage.py         # Main Django project file
+│   ├── accounts/      # Authentication & user roles
+│   ├── courses/       # Course & prerequisite management
+│   ├── students/      # Enrollment logic & schedules
+│   └── professors/    # Professor dashboards
+│
+├── static/            # CSS, icons, fonts
+├── templates/         # HTML templates (RTL supported)
+└── manage.py
 ```
 
 ---
 
 ## 🔐 Security Features
 
-* JWT-based authentication
-* Role-based access control
-* Secure API endpoints
-* Server-side validation for all enrollment rules
+- JWT-based authentication
+- Role-based authorization
+- Secure API endpoints
+- Server-side validation for all enrollment rules
 
 ---
 
 ## 📝 Notes
 
-* SQLite is used for simplicity and development purposes.
-* The project can be easily extended to use PostgreSQL or MySQL.
-* This system is intended for educational and academic use.
+- SQLite is used for simplicity and academic purposes
+- Easily extendable to PostgreSQL or MySQL
+- Designed for educational and demonstration use
 
 ---
 
-## ✅ Conclusion
+## 📄 License
 
-This project demonstrates a complete university course enrollment system with clean architecture, modular design, and robust validation logic.
-It is suitable for academic evaluation and can be extended for real-world university systems.
+This project is intended for **educational and academic purposes**.
 
 ---
 
-**Author:**
-University Course Enrollment System – Student Project
+## 👤 Author
+
+**University Course Enrollment System**  
+Academic & Portfolio Project

@@ -197,5 +197,12 @@ This project is intended for **educational and academic purposes**.
 
 ## 👤 Author
 
-**University Course Enrollment System**  
-Academic & Portfolio Project
+**Mohammad Salkhorde** 👋  
+Python / Django Backend Developer  
+
+Academic & Portfolio Project — focused on **Clean Architecture**, **SOLID principles**, and **secure role-based systems**.
+
+- **GitHub:** https://github.com/MohammadSalkhorde  
+- **LinkedIn:** https://www.linkedin.com/in/mohammad-salkhorde-a13767385  
+- **Portfolio:** https://mohammad-salkhorde.ir  
+- **Email:** m.salkhorde444@gmail.com
